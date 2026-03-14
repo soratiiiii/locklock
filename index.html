@@ -69,6 +69,7 @@
       margin-bottom: 10px;
     }
     .lock-btn:hover { background: #ff4d73; transform: translateY(-2px); }
+    .lock-btn:disabled { background: #ffb3c6; cursor: not-allowed; transform: none; }
     .result-box {
       background: #fff0f3;
       border: 2px solid #ffb3c6;
@@ -76,8 +77,9 @@
       padding: 14px;
       margin-top: 14px;
       word-break: break-all;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       color: #ff6b8a;
+      font-weight: 700;
       display: none;
     }
     .copy-btn {
@@ -94,8 +96,6 @@
       transition: all 0.2s;
     }
     .copy-btn:hover { background: #ffb3c6; color: white; }
-
-    /* 이미지 업로드 영역 */
     .img-upload-area {
       border: 2px dashed #ffb3c6;
       border-radius: 16px;
@@ -112,49 +112,35 @@
     }
     .upload-placeholder { color: #ffb3c6; font-size: 0.9rem; }
     .upload-placeholder span { display: block; font-size: 2rem; margin-bottom: 6px; }
-
-    .preview-wrap {
-      position: relative;
-      display: inline-block;
-      margin-bottom: 12px;
-    }
+    .preview-wrap { position: relative; display: inline-block; margin-bottom: 12px; }
     .preview-img {
       width: 100px; height: 100px;
       border-radius: 16px; object-fit: cover;
-      border: 3px solid #ffb3c6;
-      display: block;
+      border: 3px solid #ffb3c6; display: block;
     }
     .delete-btn {
-      position: absolute;
-      top: -8px; right: -8px;
+      position: absolute; top: -8px; right: -8px;
       width: 26px; height: 26px;
-      background: #ff6b8a;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      font-size: 0.8rem;
-      cursor: pointer;
+      background: #ff6b8a; color: white;
+      border: none; border-radius: 50%;
+      font-size: 0.8rem; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       font-weight: 800;
       box-shadow: 0 2px 6px rgba(255,107,138,0.4);
       transition: all 0.2s;
     }
     .delete-btn:hover { background: #ff4d73; transform: scale(1.1); }
-
-    /* 열기 화면 */
     .avatar {
       width: 200px; height: 200px;
       border-radius: 16px; object-fit: cover;
-      border: 4px solid #ffb3c6;
-      margin-bottom: 14px;
+      border: 4px solid #ffb3c6; margin-bottom: 14px;
     }
     .btn-link {
       display: flex; align-items: center; justify-content: center;
       background: #fff0f3; color: #ff6b8a;
       text-decoration: none; font-weight: 700;
       border-radius: 14px; padding: 13px;
-      border: 2px solid #ffb3c6;
-      transition: all 0.2s;
+      border: 2px solid #ffb3c6; transition: all 0.2s;
     }
     .btn-link:hover { background: #ff6b8a; color: white; border-color: #ff6b8a; }
     .error { color: #ff4d73; font-size: 0.85rem; margin-top: 8px; }
@@ -174,21 +160,18 @@
 
     <!-- 이미지 잠금 -->
     <div id="image-section">
-      <!-- 미리보기 없을 때: 업로드 영역 -->
       <div class="img-upload-area" id="upload-area">
         <input type="file" id="img-file" accept="image/*" onchange="previewImg()"/>
         <div class="upload-placeholder">
-          <span>🖼️</span>
-          이미지를 클릭해서 선택하세요
+          <span>🖼️</span>이미지를 클릭해서 선택하세요
         </div>
       </div>
-      <!-- 미리보기 있을 때 -->
       <div class="preview-wrap" id="preview-wrap" style="display:none">
         <img class="preview-img" id="preview"/>
-        <button class="delete-btn" onclick="clearImage()" title="삭제">✕</button>
+        <button class="delete-btn" onclick="clearImage()">✕</button>
       </div>
       <input type="password" id="img-pw" placeholder="🔑 비밀번호 설정"/>
-      <button class="lock-btn" onclick="lockImage()">이미지 잠그기 🔒</button>
+      <button class="lock-btn" id="img-btn" onclick="lockImage()">이미지 잠그기 🔒</button>
       <div class="result-box" id="img-result">
         <div id="img-result-url"></div>
         <button class="copy-btn" onclick="copyUrl('img-result-url')">📋 복사하기</button>
@@ -199,7 +182,7 @@
     <div id="link-section" style="display:none">
       <input type="text" id="link-url" placeholder="🔗 링크 URL 입력"/>
       <input type="password" id="link-pw" placeholder="🔑 비밀번호 설정"/>
-      <button class="lock-btn" onclick="lockLink()">링크 잠그기 🔒</button>
+      <button class="lock-btn" id="link-btn" onclick="lockLink()">링크 잠그기 🔒</button>
       <div class="result-box" id="link-result">
         <div id="link-result-url"></div>
         <button class="copy-btn" onclick="copyUrl('link-result-url')">📋 복사하기</button>
@@ -218,10 +201,12 @@
     </div>
   </div>
 
-  <p class="footer">사랑해요💗</p>
+  <p class="footer">made with 💗</p>
 </div>
 
 <script>
+  const BASE = window.location.origin;
+
   function setMode(mode) {
     document.getElementById('image-section').style.display = mode==='image' ? 'block' : 'none';
     document.getElementById('link-section').style.display = mode==='link' ? 'block' : 'none';
@@ -230,7 +215,8 @@
   }
 
   window.onload = () => {
-    if (location.hash && location.hash.length > 1) {
+    const path = window.location.pathname.replace('/', '');
+    if (path && path.length > 0) {
       document.getElementById('lock-ui').style.display = 'none';
       document.getElementById('unlock-ui').style.display = 'block';
     }
@@ -256,50 +242,82 @@
     document.getElementById('img-result').style.display = 'none';
   }
 
-  function lockImage() {
+  async function lockImage() {
     const file = document.getElementById('img-file').files[0];
     const pw = document.getElementById('img-pw').value;
     if (!pw) return alert('비밀번호를 입력해주세요!');
     if (!file) return alert('이미지를 선택해주세요!');
+
+    const btn = document.getElementById('img-btn');
+    btn.disabled = true; btn.textContent = '저장 중... ⏳';
+
     const reader = new FileReader();
-    reader.onload = e => {
-      const url = makeUrl({ type:'img', data: e.target.result }, pw);
-      document.getElementById('img-result-url').textContent = url;
-      document.getElementById('img-result').style.display = 'block';
+    reader.onload = async e => {
+      const encrypted = CryptoJS.AES.encrypt(
+        JSON.stringify({ type:'img', data: e.target.result }), pw
+      ).toString();
+      const id = await saveToDB(encrypted);
+      if (id) {
+        const url = `${BASE}/${id}`;
+        document.getElementById('img-result-url').textContent = url;
+        document.getElementById('img-result').style.display = 'block';
+      }
+      btn.disabled = false; btn.textContent = '이미지 잠그기 🔒';
     };
     reader.readAsDataURL(file);
   }
 
-  function lockLink() {
+  async function lockLink() {
     const link = document.getElementById('link-url').value;
     const pw = document.getElementById('link-pw').value;
     if (!pw) return alert('비밀번호를 입력해주세요!');
     if (!link) return alert('링크를 입력해주세요!');
-    const url = makeUrl({ type:'link', data: link }, pw);
-    document.getElementById('link-result-url').textContent = url;
-    document.getElementById('link-result').style.display = 'block';
+
+    const btn = document.getElementById('link-btn');
+    btn.disabled = true; btn.textContent = '저장 중... ⏳';
+
+    const encrypted = CryptoJS.AES.encrypt(
+      JSON.stringify({ type:'link', data: link }), pw
+    ).toString();
+    const id = await saveToDB(encrypted);
+    if (id) {
+      const url = `${BASE}/${id}`;
+      document.getElementById('link-result-url').textContent = url;
+      document.getElementById('link-result').style.display = 'block';
+    }
+    btn.disabled = false; btn.textContent = '링크 잠그기 🔒';
   }
 
-  function makeUrl(data, pw) {
-    const encrypted = CryptoJS.AES.encrypt(JSON.stringify(data), pw).toString();
-    const encoded = btoa(encrypted).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
-    return location.href.split('#')[0] + '#' + encoded;
+  async function saveToDB(encrypted) {
+    const id = Math.random().toString(36).slice(2, 8);
+    const res = await fetch('/api/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, data: encrypted }),
+    });
+    if (!res.ok) { alert('저장 실패 😢'); return null; }
+    return id;
   }
 
-  function copyUrl(id) {
-    navigator.clipboard.writeText(document.getElementById(id).textContent);
+  function copyUrl(elId) {
+    navigator.clipboard.writeText(document.getElementById(elId).textContent);
     alert('복사됐어요! 🎉');
   }
 
-  function unlockIt() {
-    const hash = location.hash.slice(1);
+  async function unlockIt() {
+    const path = window.location.pathname.replace('/', '');
     const pw = document.getElementById('unlock-pw').value;
     document.getElementById('error-msg').textContent = '';
     document.getElementById('unlocked-content').style.display = 'none';
+
     try {
-      const encrypted = atob(hash.replace(/-/g,'+').replace(/_/g,'/'));
+      const res = await fetch(`/api/get?id=${path}`);
+      if (!res.ok) throw new Error('not found');
+      const { data: encrypted } = await res.json();
+
       const bytes = CryptoJS.AES.decrypt(encrypted, pw);
       const data = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+
       if (data.type === 'img') {
         const img = document.getElementById('show-img');
         img.src = data.data; img.style.display = 'block';
@@ -311,7 +329,7 @@
       }
       document.getElementById('unlocked-content').style.display = 'block';
     } catch(e) {
-      document.getElementById('error-msg').textContent = '❌ 비밀번호가 틀렸어요!';
+      document.getElementById('error-msg').textContent = '❌ 비밀번호가 틀렸거나 링크가 잘못됐어요!';
     }
   }
 </script>

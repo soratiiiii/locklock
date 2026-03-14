@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🔒 locklock</title>
+  <title>🔒 LOCK.AI</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap');
@@ -135,17 +135,17 @@
 </head>
 <body>
 <div class="card">
-  <h2>🔒 locklock</h2>
+  <h2>🔒 LOCK.AI</h2>
   <p class="subtitle">비밀번호로 안전하게 공유해요</p>
 
   <div id="lock-ui">
     <div class="mode-tabs">
-      <button class="mode-tab active" onclick="setMode('image')">🖼️ 이미지 잠금</button>
-      <button class="mode-tab" onclick="setMode('link')">🔗 링크 잠금</button>
+      <button class="mode-tab" onclick="setMode('image')">🖼️ 이미지 잠금</button>
+      <button class="mode-tab active" onclick="setMode('link')">🔗 링크 잠금</button>
     </div>
 
         <!-- 링크 잠금 -->
-    <div id="link-section" style="display:none">
+    <div id="link-section">
       <input type="text" id="link-url" placeholder="🔗 링크 URL 입력"/>
       <input type="password" id="link-pw" placeholder="🔑 비밀번호 설정"/>
       <input type="text" id="link-hint" placeholder="💡 힌트 (선택사항)"/>
@@ -168,7 +168,7 @@
   </div>
   
     <!-- 이미지 잠금 -->
-    <div id="image-section">
+    <div id="link-section" style="display:none">
       <div class="img-upload-area" id="upload-area">
         <input type="file" id="img-file" accept="image/*" onchange="previewImg()"/>
         <div class="upload-placeholder">

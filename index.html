@@ -144,6 +144,29 @@
       <button class="mode-tab" onclick="setMode('link')">🔗 링크 잠금</button>
     </div>
 
+        <!-- 링크 잠금 -->
+    <div id="link-section" style="display:none">
+      <input type="text" id="link-url" placeholder="🔗 링크 URL 입력"/>
+      <input type="password" id="link-pw" placeholder="🔑 비밀번호 설정"/>
+      <input type="text" id="link-hint" placeholder="💡 힌트 (선택사항)"/>
+      <p class="label">⏰ 링크 만료 시간</p>
+      <select id="link-expires">
+        <option value="0">무제한</option>
+        <option value="60">1시간 후</option>
+        <option value="360">6시간 후</option>
+        <option value="720">12시간 후</option>
+        <option value="1440">24시간 후</option>
+        <option value="4320">3일 후</option>
+        <option value="10080">7일 후</option>
+      </select>
+      <button class="lock-btn" id="link-btn" onclick="lockLink()">링크 잠그기 🔒</button>
+      <div class="result-box" id="link-result">
+        <div id="link-result-url"></div>
+        <button class="copy-btn" onclick="copyUrl('link-result-url')">📋 복사하기</button>
+      </div>
+    </div>
+  </div>
+  
     <!-- 이미지 잠금 -->
     <div id="image-section">
       <div class="img-upload-area" id="upload-area">
@@ -175,29 +198,6 @@
         <button class="copy-btn" onclick="copyUrl('img-result-url')">📋 복사하기</button>
       </div>
     </div>
-
-    <!-- 링크 잠금 -->
-    <div id="link-section" style="display:none">
-      <input type="text" id="link-url" placeholder="🔗 링크 URL 입력"/>
-      <input type="password" id="link-pw" placeholder="🔑 비밀번호 설정"/>
-      <input type="text" id="link-hint" placeholder="💡 힌트 (선택사항)"/>
-      <p class="label">⏰ 링크 만료 시간</p>
-      <select id="link-expires">
-        <option value="0">무제한</option>
-        <option value="60">1시간 후</option>
-        <option value="360">6시간 후</option>
-        <option value="720">12시간 후</option>
-        <option value="1440">24시간 후</option>
-        <option value="4320">3일 후</option>
-        <option value="10080">7일 후</option>
-      </select>
-      <button class="lock-btn" id="link-btn" onclick="lockLink()">링크 잠그기 🔒</button>
-      <div class="result-box" id="link-result">
-        <div id="link-result-url"></div>
-        <button class="copy-btn" onclick="copyUrl('link-result-url')">📋 복사하기</button>
-      </div>
-    </div>
-  </div>
 
   <!-- 열기 화면 -->
   <div id="unlock-ui" style="display:none">

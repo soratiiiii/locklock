@@ -42,7 +42,7 @@
     }
     .mode-tab.active { background: #ff6b8a; color: white; border-color: #ff6b8a; }
     .mode-tab:hover:not(.active) { background: #ffe0e8; }
-    input[type="text"], input[type="password"], input[type="file"] {
+    input[type="text"], input[type="password"] {
       width: 100%;
       padding: 12px 16px;
       border: 2px solid #ffb3c6;
@@ -53,7 +53,6 @@
       outline: none;
       background: white;
     }
-    input[type="file"] { cursor: pointer; color: #aaa; }
     input:focus { border-color: #ff6b8a; }
     .lock-btn {
       width: 100%;
@@ -95,13 +94,53 @@
       transition: all 0.2s;
     }
     .copy-btn:hover { background: #ffb3c6; color: white; }
+
+    /* 이미지 업로드 영역 */
+    .img-upload-area {
+      border: 2px dashed #ffb3c6;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .img-upload-area:hover { background: #fff0f3; border-color: #ff6b8a; }
+    .img-upload-area input[type="file"] {
+      position: absolute; inset: 0;
+      opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .upload-placeholder { color: #ffb3c6; font-size: 0.9rem; }
+    .upload-placeholder span { display: block; font-size: 2rem; margin-bottom: 6px; }
+
+    .preview-wrap {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
     .preview-img {
-      width: 90px; height: 90px;
+      width: 100px; height: 100px;
       border-radius: 16px; object-fit: cover;
       border: 3px solid #ffb3c6;
-      margin-bottom: 12px;
-      display: none;
+      display: block;
     }
+    .delete-btn {
+      position: absolute;
+      top: -8px; right: -8px;
+      width: 26px; height: 26px;
+      background: #ff6b8a;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800;
+      box-shadow: 0 2px 6px rgba(255,107,138,0.4);
+      transition: all 0.2s;
+    }
+    .delete-btn:hover { background: #ff4d73; transform: scale(1.1); }
+
     /* 열기 화면 */
     .avatar {
       width: 200px; height: 200px;
@@ -127,7 +166,6 @@
   <h2>🔒 locklock</h2>
   <p class="subtitle">비밀번호로 안전하게 공유해요</p>
 
-  <!-- 잠금 모드 (열기일 때는 숨김) -->
   <div id="lock-ui">
     <div class="mode-tabs">
       <button class="mode-tab active" onclick="setMode('image')">🖼️ 이미지 잠금</button>
@@ -136,8 +174,19 @@
 
     <!-- 이미지 잠금 -->
     <div id="image-section">
-      <img class="preview-img" id="preview"/>
-      <input type="file" id="img-file" accept="image/*" onchange="previewImg()"/>
+      <!-- 미리보기 없을 때: 업로드 영역 -->
+      <div class="img-upload-area" id="upload-area">
+        <input type="file" id="img-file" accept="image/*" onchange="previewImg()"/>
+        <div class="upload-placeholder">
+          <span>🖼️</span>
+          이미지를 클릭해서 선택하세요
+        </div>
+      </div>
+      <!-- 미리보기 있을 때 -->
+      <div class="preview-wrap" id="preview-wrap" style="display:none">
+        <img class="preview-img" id="preview"/>
+        <button class="delete-btn" onclick="clearImage()" title="삭제">✕</button>
+      </div>
       <input type="password" id="img-pw" placeholder="🔑 비밀번호 설정"/>
       <button class="lock-btn" onclick="lockImage()">이미지 잠그기 🔒</button>
       <div class="result-box" id="img-result">
@@ -158,7 +207,7 @@
     </div>
   </div>
 
-  <!-- 열기 화면 (URL에 #data 있을 때만) -->
+  <!-- 열기 화면 -->
   <div id="unlock-ui" style="display:none">
     <input type="password" id="unlock-pw" placeholder="🔑 비밀번호 입력"/>
     <button class="lock-btn" onclick="unlockIt()">열기 🔓</button>
@@ -169,7 +218,7 @@
     </div>
   </div>
 
-  <p class="footer">made with 💗</p>
+  <p class="footer">사랑해요💗</p>
 </div>
 
 <script>
@@ -192,10 +241,19 @@
     if (!file) return;
     const reader = new FileReader();
     reader.onload = e => {
-      const p = document.getElementById('preview');
-      p.src = e.target.result; p.style.display = 'block';
+      document.getElementById('preview').src = e.target.result;
+      document.getElementById('upload-area').style.display = 'none';
+      document.getElementById('preview-wrap').style.display = 'inline-block';
     };
     reader.readAsDataURL(file);
+  }
+
+  function clearImage() {
+    document.getElementById('img-file').value = '';
+    document.getElementById('preview').src = '';
+    document.getElementById('preview-wrap').style.display = 'none';
+    document.getElementById('upload-area').style.display = 'block';
+    document.getElementById('img-result').style.display = 'none';
   }
 
   function lockImage() {

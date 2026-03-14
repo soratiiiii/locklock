@@ -24,17 +24,20 @@
       text-align: center;
       box-shadow: 0 8px 32px rgba(255,150,170,0.15);
     }
-    h2 { color: #ff6b8a; font-size: 1.3rem; margin-bottom: 20px; }
-    input[type="text"], input[type="password"] {
+    h2 { color: #ff6b8a; font-size: 1.3rem; margin-bottom: 6px; }
+    .subtitle { color: #ffb3c6; font-size: 0.85rem; margin-bottom: 20px; }
+    input[type="text"], input[type="password"], input[type="file"] {
       width: 100%;
       padding: 12px 16px;
       border: 2px solid #ffb3c6;
       border-radius: 14px;
       font-family: 'Nunito', sans-serif;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       margin-bottom: 12px;
       outline: none;
+      background: white;
     }
+    input[type="file"] { cursor: pointer; color: #aaa; }
     input:focus { border-color: #ff6b8a; }
     button {
       width: 100%;
@@ -63,75 +66,91 @@
       display: none;
     }
     .copy-btn {
-      background: #fff0f3;
-      color: #ff6b8a;
-      border: 2px solid #ffb3c6;
-      margin-top: 8px;
+      background: #fff0f3 !important;
+      color: #ff6b8a !important;
+      border: 2px solid #ffb3c6 !important;
       font-size: 0.9rem;
     }
-    .copy-btn:hover { background: #ffb3c6; color: white; }
+    .copy-btn:hover { background: #ffb3c6 !important; color: white !important; }
+    .mode-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+    .mode-tab {
+      flex: 1; padding: 10px;
+      background: #fff0f3; color: #ff6b8a;
+      border: 2px solid #ffb3c6; border-radius: 12px;
+      font-size: 0.88rem; font-weight: 700; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mode-tab.active { background: #ff6b8a; color: white; border-color: #ff6b8a; }
+    .preview-img {
+      width: 90px; height: 90px;
+      border-radius: 16px; object-fit: cover;
+      border: 3px solid #ffb3c6;
+      margin-bottom: 12px;
+      display: none;
+    }
     .avatar {
-      width: 100px; height: 100px;
-      border-radius: 50%;
-      object-fit: cover;
+      width: 120px; height: 120px;
+      border-radius: 16px; object-fit: cover;
       border: 4px solid #ffb3c6;
       margin-bottom: 14px;
     }
     .btn-link {
-      display: flex; align-items: center; justify-content: center; gap: 8px;
+      display: flex; align-items: center; justify-content: center;
       background: #fff0f3; color: #ff6b8a;
       text-decoration: none; font-weight: 700;
       border-radius: 14px; padding: 13px;
-      margin-bottom: 10px;
       border: 2px solid #ffb3c6;
       transition: all 0.2s;
     }
     .btn-link:hover { background: #ff6b8a; color: white; border-color: #ff6b8a; }
     .error { color: #ff4d73; font-size: 0.85rem; margin-top: 8px; }
     .footer { margin-top: 20px; font-size: 0.75rem; color: #ddd; }
-    .tab-btns { display: flex; gap: 8px; margin-bottom: 20px; }
-    .tab-btn {
-      flex: 1; padding: 10px;
-      background: #fff0f3; color: #ff6b8a;
-      border: 2px solid #ffb3c6; border-radius: 12px;
-      font-size: 0.9rem; font-weight: 700;
-    }
-    .tab-btn.active { background: #ff6b8a; color: white; border-color: #ff6b8a; }
-    #lock-section, #unlock-section { display: none; }
+    .divider { border: none; border-top: 2px dashed #ffe0e8; margin: 20px 0; }
   </style>
 </head>
 <body>
 <div class="card">
   <h2>🔒 locklock</h2>
+  <p class="subtitle">비밀번호로 안전하게 공유해요</p>
 
-  <div class="tab-btns">
-    <button class="tab-btn active" onclick="showTab('lock')">🔐 잠그기</button>
-    <button class="tab-btn" onclick="showTab('unlock')">🔓 열기</button>
+  <!-- 모드 선택 탭 -->
+  <div class="mode-tabs">
+    <button class="mode-tab active" onclick="setMode('image')">🖼️ 이미지 잠금</button>
+    <button class="mode-tab" onclick="setMode('link')">🔗 링크 잠금</button>
+    <button class="mode-tab" onclick="setMode('unlock')">🔓 열기</button>
   </div>
 
-  <!-- 잠그기 섹션 -->
-  <div id="lock-section">
-    <input type="text" id="img-url" placeholder="🖼️ 이미지 URL (선택)" />
-    <input type="text" id="link1" placeholder="🔗 링크 1 URL" />
-    <input type="text" id="link1-name" placeholder="링크 1 이름 (예: 내 인스타)" />
-    <input type="text" id="link2" placeholder="🔗 링크 2 URL" />
-    <input type="text" id="link2-name" placeholder="링크 2 이름 (예: 내 블로그)" />
-    <input type="password" id="lock-pw" placeholder="🔑 비밀번호 설정" />
-    <button onclick="lockIt()">잠그기 🔒</button>
-    <div class="result-box" id="result-box">
-      <div id="result-url"></div>
-      <button class="copy-btn" onclick="copyUrl()">📋 복사하기</button>
+  <!-- 이미지 잠금 -->
+  <div id="image-section">
+    <img class="preview-img" id="preview"/>
+    <input type="file" id="img-file" accept="image/*" onchange="previewImg()"/>
+    <input type="password" id="img-pw" placeholder="🔑 비밀번호 설정"/>
+    <button onclick="lockImage()">이미지 잠그기 🔒</button>
+    <div class="result-box" id="img-result">
+      <div id="img-result-url"></div>
+      <button class="copy-btn" onclick="copyUrl('img-result-url')">📋 복사하기</button>
     </div>
   </div>
 
-  <!-- 열기 섹션 -->
-  <div id="unlock-section">
-    <input type="password" id="unlock-pw" placeholder="🔑 비밀번호 입력" />
+  <!-- 링크 잠금 -->
+  <div id="link-section" style="display:none">
+    <input type="text" id="link-url" placeholder="🔗 링크 URL 입력"/>
+    <input type="password" id="link-pw" placeholder="🔑 비밀번호 설정"/>
+    <button onclick="lockLink()">링크 잠그기 🔒</button>
+    <div class="result-box" id="link-result">
+      <div id="link-result-url"></div>
+      <button class="copy-btn" onclick="copyUrl('link-result-url')">📋 복사하기</button>
+    </div>
+  </div>
+
+  <!-- 열기 -->
+  <div id="unlock-section" style="display:none">
+    <input type="password" id="unlock-pw" placeholder="🔑 비밀번호 입력"/>
     <button onclick="unlockIt()">열기 🔓</button>
     <p class="error" id="error-msg"></p>
     <div id="unlocked-content" style="display:none; margin-top:16px;">
-      <img class="avatar" id="show-img" src="" alt=""/>
-      <div id="show-links"></div>
+      <img class="avatar" id="show-img" style="display:none"/>
+      <a class="btn-link" id="show-link" href="#" target="_blank" style="display:none">🔗 링크 열기</a>
     </div>
   </div>
 
@@ -139,41 +158,62 @@
 </div>
 
 <script>
-  // 탭 초기화
-  function showTab(tab) {
-    document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', (tab==='lock'&&i===0)||(tab==='unlock'&&i===1)));
-    document.getElementById('lock-section').style.display = tab==='lock' ? 'block' : 'none';
-    document.getElementById('unlock-section').style.display = tab==='unlock' ? 'block' : 'none';
+  function setMode(mode) {
+    ['image','link','unlock'].forEach((m, i) => {
+      document.getElementById(m+'-section').style.display = mode===m ? 'block' : 'none';
+      document.querySelectorAll('.mode-tab')[i].classList.toggle('active', mode===m);
+    });
   }
 
-  // URL에 #data 있으면 자동으로 열기 탭
   window.onload = () => {
-    if (location.hash && location.hash.length > 1) showTab('unlock');
-    else showTab('lock');
+    if (location.hash && location.hash.length > 1) setMode('unlock');
+    else setMode('image');
   };
 
-  function lockIt() {
-    const data = {
-      img: document.getElementById('img-url').value,
-      l1: document.getElementById('link1').value,
-      l1n: document.getElementById('link1-name').value || '링크 1',
-      l2: document.getElementById('link2').value,
-      l2n: document.getElementById('link2-name').value || '링크 2',
+  function previewImg() {
+    const file = document.getElementById('img-file').files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const p = document.getElementById('preview');
+      p.src = e.target.result; p.style.display = 'block';
     };
-    const pw = document.getElementById('lock-pw').value;
-    if (!pw) return alert('비밀번호를 입력해주세요!');
-    if (!data.l1 && !data.l2) return alert('링크를 하나 이상 입력해주세요!');
-
-    const encrypted = CryptoJS.AES.encrypt(JSON.stringify(data), pw).toString();
-    const encoded = btoa(encrypted).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
-    const url = location.href.split('#')[0] + '#' + encoded;
-
-    document.getElementById('result-url').textContent = url;
-    document.getElementById('result-box').style.display = 'block';
+    reader.readAsDataURL(file);
   }
 
-  function copyUrl() {
-    navigator.clipboard.writeText(document.getElementById('result-url').textContent);
+  function lockImage() {
+    const file = document.getElementById('img-file').files[0];
+    const pw = document.getElementById('img-pw').value;
+    if (!pw) return alert('비밀번호를 입력해주세요!');
+    if (!file) return alert('이미지를 선택해주세요!');
+    const reader = new FileReader();
+    reader.onload = e => {
+      const encrypted = CryptoJS.AES.encrypt(JSON.stringify({ type:'img', data: e.target.result }), pw).toString();
+      const url = makeUrl(encrypted);
+      document.getElementById('img-result-url').textContent = url;
+      document.getElementById('img-result').style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function lockLink() {
+    const link = document.getElementById('link-url').value;
+    const pw = document.getElementById('link-pw').value;
+    if (!pw) return alert('비밀번호를 입력해주세요!');
+    if (!link) return alert('링크를 입력해주세요!');
+    const encrypted = CryptoJS.AES.encrypt(JSON.stringify({ type:'link', data: link }), pw).toString();
+    const url = makeUrl(encrypted);
+    document.getElementById('link-result-url').textContent = url;
+    document.getElementById('link-result').style.display = 'block';
+  }
+
+  function makeUrl(encrypted) {
+    const encoded = btoa(encrypted).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+    return location.href.split('#')[0] + '#' + encoded;
+  }
+
+  function copyUrl(id) {
+    navigator.clipboard.writeText(document.getElementById(id).textContent);
     alert('복사됐어요! 🎉');
   }
 
@@ -181,27 +221,24 @@
     const hash = location.hash.slice(1);
     const pw = document.getElementById('unlock-pw').value;
     document.getElementById('error-msg').textContent = '';
-
+    document.getElementById('unlocked-content').style.display = 'none';
     try {
       const encrypted = atob(hash.replace(/-/g,'+').replace(/_/g,'/'));
       const bytes = CryptoJS.AES.decrypt(encrypted, pw);
       const data = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
 
-      if (data.img) {
-        document.getElementById('show-img').src = data.img;
-        document.getElementById('show-img').style.display = 'block';
-      } else {
+      if (data.type === 'img') {
+        const img = document.getElementById('show-img');
+        img.src = data.data; img.style.display = 'block';
+        document.getElementById('show-link').style.display = 'none';
+      } else if (data.type === 'link') {
+        const a = document.getElementById('show-link');
+        a.href = data.data; a.style.display = 'flex';
         document.getElementById('show-img').style.display = 'none';
       }
-
-      let linksHtml = '';
-      if (data.l1) linksHtml += `<a class="btn-link" href="${data.l1}" target="_blank">✨ ${data.l1n}</a>`;
-      if (data.l2) linksHtml += `<a class="btn-link" href="${data.l2}" target="_blank">🎀 ${data.l2n}</a>`;
-      document.getElementById('show-links').innerHTML = linksHtml;
       document.getElementById('unlocked-content').style.display = 'block';
     } catch(e) {
       document.getElementById('error-msg').textContent = '❌ 비밀번호가 틀렸어요!';
-      document.getElementById('unlocked-content').style.display = 'none';
     }
   }
 </script>

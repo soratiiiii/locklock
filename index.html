@@ -165,10 +165,9 @@
         <button class="copy-btn" onclick="copyUrl('link-result-url')">📋 복사하기</button>
       </div>
     </div>
-  </div>
   
     <!-- 이미지 잠금 -->
-    <div id="link-section" style="display:none">
+    <div id="image-section" style="display:none">
       <div class="img-upload-area" id="upload-area">
         <input type="file" id="img-file" accept="image/*" onchange="previewImg()"/>
         <div class="upload-placeholder">
@@ -198,6 +197,8 @@
         <button class="copy-btn" onclick="copyUrl('img-result-url')">📋 복사하기</button>
       </div>
     </div>
+    
+  </div> 
 
   <!-- 열기 화면 -->
   <div id="unlock-ui" style="display:none">
@@ -230,7 +231,7 @@
   }
 
   window.onload = async () => {
-    const path = window.location.pathname.replace('/', '');
+    const path = window.location.pathname.replace(/^\//', '');
     if (path && path.length > 0) {
       document.getElementById('lock-ui').style.display = 'none';
       document.getElementById('unlock-ui').style.display = 'block';
@@ -339,7 +340,7 @@
   }
 
   async function unlockIt() {
-    const path = window.location.pathname.replace('/', '');
+    const path = window.location.pathname.replace(/^\//, '');
     const pw = document.getElementById('unlock-pw').value;
     document.getElementById('error-msg').textContent = '';
     document.getElementById('unlocked-content').style.display = 'none';

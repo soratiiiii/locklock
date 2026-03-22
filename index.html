@@ -7,130 +7,300 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap');
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       min-height: 100vh;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       background: #fff5f7;
       font-family: 'Nunito', sans-serif;
     }
+
     .card {
-      background: white; border-radius: 30px;
-      padding: 40px 32px; width: 360px;
+      background: white;
+      border-radius: 30px;
+      padding: 40px 32px;
+      width: 360px;
       text-align: center;
       box-shadow: 0 8px 32px rgba(255,150,170,0.15);
     }
-    h2 { color: #ff6b8a; font-size: 1.3rem; margin-bottom: 6px; }
-    .subtitle { color: #ffb3c6; font-size: 0.85rem; margin-bottom: 24px; }
-    .mode-tabs {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 10px; margin-bottom: 24px;
+
+    h2 {
+      color: #ff6b8a;
+      font-size: 1.3rem;
+      margin-bottom: 6px;
     }
+
+    .subtitle {
+      color: #ffb3c6;
+      font-size: 0.85rem;
+      margin-bottom: 24px;
+    }
+
+    .mode-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
     .mode-tab {
       padding: 12px 8px;
-      background: #fff0f3; color: #ff6b8a;
-      border: 2px solid #ffb3c6; border-radius: 14px;
+      background: #fff0f3;
+      color: #ff6b8a;
+      border: 2px solid #ffb3c6;
+      border-radius: 14px;
       font-family: 'Nunito', sans-serif;
-      font-size: 0.95rem; font-weight: 700; cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
       transition: all 0.2s;
     }
-    .mode-tab.active { background: #ff6b8a; color: white; border-color: #ff6b8a; }
-    .mode-tab:hover:not(.active) { background: #ffe0e8; }
-    input[type="text"], input[type="password"], select {
-      width: 100%; padding: 12px 16px;
-      border: 2px solid #ffb3c6; border-radius: 14px;
-      font-family: 'Nunito', sans-serif; font-size: 0.9rem;
-      margin-bottom: 12px; outline: none; background: white;
+
+    .mode-tab.active {
+      background: #ff6b8a;
+      color: white;
+      border-color: #ff6b8a;
+    }
+
+    .mode-tab:hover:not(.active) {
+      background: #ffe0e8;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #ffb3c6;
+      border-radius: 14px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+      outline: none;
+      background: white;
       color: #444;
     }
-    input:focus, select:focus { border-color: #ff6b8a; }
-    select { appearance: none; cursor: pointer; }
+
+    input:focus,
+    select:focus {
+      border-color: #ff6b8a;
+    }
+
+    select {
+      appearance: none;
+      cursor: pointer;
+    }
+
     .lock-btn {
-      width: 100%; padding: 13px;
-      background: #ff6b8a; color: white;
-      border: none; border-radius: 14px;
+      width: 100%;
+      padding: 13px;
+      background: #ff6b8a;
+      color: white;
+      border: none;
+      border-radius: 14px;
       font-family: 'Nunito', sans-serif;
-      font-size: 1rem; font-weight: 800; cursor: pointer;
-      transition: all 0.2s; margin-bottom: 10px;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 10px;
     }
-    .lock-btn:hover { background: #ff4d73; transform: translateY(-2px); }
-    .lock-btn:disabled { background: #ffb3c6; cursor: not-allowed; transform: none; }
+
+    .lock-btn:hover {
+      background: #ff4d73;
+      transform: translateY(-2px);
+    }
+
+    .lock-btn:disabled {
+      background: #ffb3c6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     .result-box {
-      background: #fff0f3; border: 2px solid #ffb3c6;
-      border-radius: 14px; padding: 14px; margin-top: 14px;
-      word-break: break-all; font-size: 0.85rem;
-      color: #ff6b8a; font-weight: 700; display: none;
+      background: #fff0f3;
+      border: 2px solid #ffb3c6;
+      border-radius: 14px;
+      padding: 14px;
+      margin-top: 14px;
+      word-break: break-all;
+      font-size: 0.85rem;
+      color: #ff6b8a;
+      font-weight: 700;
+      display: none;
     }
+
     .copy-btn {
-      width: 100%; padding: 10px;
-      background: #fff0f3; color: #ff6b8a;
-      border: 2px solid #ffb3c6; border-radius: 12px;
+      width: 100%;
+      padding: 10px;
+      background: #fff0f3;
+      color: #ff6b8a;
+      border: 2px solid #ffb3c6;
+      border-radius: 12px;
       font-family: 'Nunito', sans-serif;
-      font-size: 0.9rem; font-weight: 700; cursor: pointer;
-      margin-top: 8px; transition: all 0.2s;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all 0.2s;
     }
-    .copy-btn:hover { background: #ffb3c6; color: white; }
+
+    .copy-btn:hover {
+      background: #ffb3c6;
+      color: white;
+    }
+
     .img-upload-area {
-      border: 2px dashed #ffb3c6; border-radius: 16px;
-      padding: 20px; margin-bottom: 12px; cursor: pointer;
-      transition: all 0.2s; position: relative;
+      border: 2px dashed #ffb3c6;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
     }
-    .img-upload-area:hover { background: #fff0f3; border-color: #ff6b8a; }
+
+    .img-upload-area:hover {
+      background: #fff0f3;
+      border-color: #ff6b8a;
+    }
+
     .img-upload-area input[type="file"] {
-      position: absolute; inset: 0;
-      opacity: 0; cursor: pointer; width: 100%; height: 100%;
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
     }
-    .upload-placeholder { color: #ffb3c6; font-size: 0.9rem; }
-    .upload-placeholder span { display: block; font-size: 2rem; margin-bottom: 6px; }
-    .preview-wrap { position: relative; display: inline-block; margin-bottom: 12px; }
-    .preview-img {
-      width: 100px; height: 100px;
-      border-radius: 16px; object-fit: cover;
-      border: 3px solid #ffb3c6; display: block;
+
+    .upload-placeholder {
+      color: #ffb3c6;
+      font-size: 0.9rem;
     }
+
+    .upload-placeholder span {
+      display: block;
+      font-size: 2rem;
+      margin-bottom: 6px;
+    }
+
+    .preview-wrap,
+    .unlock-card {
+      position: relative;
+      width: 100%;
+      border-radius: 18px;
+      border: 2px solid #ffd4de;
+      background: #ffffff;
+      box-shadow: 0 8px 18px rgba(255, 179, 198, 0.18);
+      overflow: hidden;
+      padding: 10px;
+      margin-bottom: 12px;
+    }
+
+    .preview-img,
+    .avatar {
+      width: 100%;
+      height: auto;
+      max-height: 70vh;
+      object-fit: contain;
+      display: block;
+      background: #fff0f3;
+      border-radius: 12px;
+      border: 3px solid #ffb3c6;
+    }
+
     .delete-btn {
-      position: absolute; top: -8px; right: -8px;
-      width: 26px; height: 26px;
-      background: #ff6b8a; color: white;
-      border: none; border-radius: 50%;
-      font-size: 0.8rem; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 26px;
+      height: 26px;
+      background: #ff6b8a;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-weight: 800;
       box-shadow: 0 2px 6px rgba(255,107,138,0.4);
       transition: all 0.2s;
+      z-index: 2;
     }
-    .delete-btn:hover { background: #ff4d73; transform: scale(1.1); }
+
+    .delete-btn:hover {
+      background: #ff4d73;
+      transform: scale(1.1);
+    }
+
     .hint-box {
-      background: #fff8f0; border: 2px solid #ffd6a5;
-      border-radius: 14px; padding: 12px;
-      font-size: 0.85rem; color: #ff9a3c;
-      font-weight: 700; margin-bottom: 14px;
+      background: #fff8f0;
+      border: 2px solid #ffd6a5;
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 0.85rem;
+      color: #ff9a3c;
+      font-weight: 700;
+      margin-bottom: 14px;
     }
+
     .expired-box {
-      background: #fff0f3; border: 2px solid #ffb3c6;
-      border-radius: 14px; padding: 20px;
-      font-size: 1rem; color: #ff6b8a; font-weight: 800;
+      background: #fff0f3;
+      border: 2px solid #ffb3c6;
+      border-radius: 14px;
+      padding: 20px;
+      font-size: 1rem;
+      color: #ff6b8a;
+      font-weight: 800;
     }
-    .avatar {
-      width: 200px; height: 200px;
-      border-radius: 16px; object-fit: cover;
-      border: 4px solid #ffb3c6; margin-bottom: 14px;
-    }
+
     .btn-link {
-      display: flex; align-items: center; justify-content: center;
-      background: #fff0f3; color: #ff6b8a;
-      text-decoration: none; font-weight: 700;
-      border-radius: 14px; padding: 13px;
-      border: 2px solid #ffb3c6; transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff0f3;
+      color: #ff6b8a;
+      text-decoration: none;
+      font-weight: 700;
+      border-radius: 14px;
+      padding: 13px;
+      border: 2px solid #ffb3c6;
+      transition: all 0.2s;
     }
-    .btn-link:hover { background: #ff6b8a; color: white; border-color: #ff6b8a; }
-    .error { color: #ff4d73; font-size: 0.85rem; margin-top: 8px; }
+
+    .btn-link:hover {
+      background: #ff6b8a;
+      color: white;
+      border-color: #ff6b8a;
+    }
+
+    .error {
+      color: #ff4d73;
+      font-size: 0.85rem;
+      margin-top: 8px;
+    }
+
     .label {
-      text-align: left; font-size: 0.8rem;
-      color: #ffb3c6; font-weight: 700;
-      margin-bottom: 4px; margin-top: 4px;
+      text-align: left;
+      font-size: 0.8rem;
+      color: #ffb3c6;
+      font-weight: 700;
+      margin-bottom: 4px;
+      margin-top: 4px;
     }
-    .footer { margin-top: 24px; font-size: 0.75rem; color: #ddd; }
+
+    .footer {
+      margin-top: 24px;
+      font-size: 0.75rem;
+      color: #ddd;
+    }
   </style>
 </head>
 <body>
@@ -144,7 +314,6 @@
       <button class="mode-tab active" onclick="setMode('link')">🔗 링크 잠금</button>
     </div>
 
-        <!-- 링크 잠금 -->
     <div id="link-section">
       <input type="text" id="link-url" placeholder="🔗 링크 URL 입력"/>
       <input type="password" id="link-pw" placeholder="🔑 비밀번호 설정"/>
@@ -165,8 +334,7 @@
         <button class="copy-btn" onclick="copyUrl('link-result-url')">📋 복사하기</button>
       </div>
     </div>
-  
-    <!-- 이미지 잠금 -->
+
     <div id="image-section" style="display:none">
       <div class="img-upload-area" id="upload-area">
         <input type="file" id="img-file" accept="image/*" onchange="previewImg()"/>
@@ -175,10 +343,12 @@
           <p align="center">🚧공사중🚧</p>
         </div>
       </div>
+
       <div class="preview-wrap" id="preview-wrap" style="display:none">
         <img class="preview-img" id="preview"/>
-        <button class="delete-btn" onclick="clearImage()">✕</button>
+        <button class="delete-btn" type="button" onclick="clearImage()">✕</button>
       </div>
+
       <input type="password" id="img-pw" placeholder="🔑 비밀번호 설정"/>
       <input type="text" id="img-hint" placeholder="💡 힌트 (선택사항)"/>
       <p class="label">⏰ 링크 만료 시간</p>
@@ -197,22 +367,24 @@
         <button class="copy-btn" onclick="copyUrl('img-result-url')">📋 복사하기</button>
       </div>
     </div>
-    
-  </div> 
+  </div>
 
-  <!-- 열기 화면 -->
   <div id="unlock-ui" style="display:none">
     <div class="hint-box" id="hint-box" style="display:none">💡 힌트: <span id="hint-text"></span></div>
     <div class="expired-box" id="expired-box" style="display:none">
       ⏰ 링크가 만료됐어요
     </div>
+
     <div id="unlock-form">
       <input type="password" id="unlock-pw" placeholder="🔑 비밀번호 입력"/>
       <button class="lock-btn" onclick="unlockIt()">열기 🔓</button>
       <p class="error" id="error-msg"></p>
     </div>
+
     <div id="unlocked-content" style="display:none; margin-top:16px;">
-      <img class="avatar" id="show-img" style="display:none"/>
+      <div class="unlock-card" id="unlock-card" style="display:none">
+        <img class="avatar" id="show-img" style="display:none"/>
+      </div>
       <a class="btn-link" id="show-link" href="#" target="_blank" style="display:none">🔗 링크 열기</a>
     </div>
   </div>
@@ -224,10 +396,11 @@
   const BASE = window.location.origin;
 
   function setMode(mode) {
-    document.getElementById('image-section').style.display = mode==='image' ? 'block' : 'none';
-    document.getElementById('link-section').style.display = mode==='link' ? 'block' : 'none';
-    document.querySelectorAll('.mode-tab').forEach((b,i) =>
-      b.classList.toggle('active', (mode==='image'&&i===0)||(mode==='link'&&i===1)));
+    document.getElementById('image-section').style.display = mode === 'image' ? 'block' : 'none';
+    document.getElementById('link-section').style.display = mode === 'link' ? 'block' : 'none';
+    document.querySelectorAll('.mode-tab').forEach((b, i) =>
+      b.classList.toggle('active', (mode === 'image' && i === 0) || (mode === 'link' && i === 1))
+    );
   }
 
   window.onload = async () => {
@@ -236,7 +409,6 @@
       document.getElementById('lock-ui').style.display = 'none';
       document.getElementById('unlock-ui').style.display = 'block';
 
-      // 힌트 미리 로드
       try {
         const res = await fetch(`/api/get?id=${path}`);
         if (res.status === 410) {
@@ -249,18 +421,19 @@
           document.getElementById('hint-text').textContent = json.hint;
           document.getElementById('hint-box').style.display = 'block';
         }
-      } catch(e) {}
+      } catch (e) {}
     }
   };
 
   function previewImg() {
     const file = document.getElementById('img-file').files[0];
     if (!file) return;
+
     const reader = new FileReader();
     reader.onload = e => {
       document.getElementById('preview').src = e.target.result;
       document.getElementById('upload-area').style.display = 'none';
-      document.getElementById('preview-wrap').style.display = 'inline-block';
+      document.getElementById('preview-wrap').style.display = 'block';
     };
     reader.readAsDataURL(file);
   }
@@ -278,25 +451,32 @@
     const pw = document.getElementById('img-pw').value;
     const hint = document.getElementById('img-hint').value;
     const expiresIn = parseInt(document.getElementById('img-expires').value);
+
     if (!pw) return alert('비밀번호를 입력해주세요!');
     if (!file) return alert('이미지를 선택해주세요!');
 
     const btn = document.getElementById('img-btn');
-    btn.disabled = true; btn.textContent = '저장 중... ⏳';
+    btn.disabled = true;
+    btn.textContent = '저장 중... ⏳';
 
     const reader = new FileReader();
     reader.onload = async e => {
       const encrypted = CryptoJS.AES.encrypt(
-        JSON.stringify({ type:'img', data: e.target.result }), pw
+        JSON.stringify({ type: 'img', data: e.target.result }),
+        pw
       ).toString();
+
       const id = await saveToDB(encrypted, hint, expiresIn);
       if (id) {
         const url = `${BASE}/${id}`;
         document.getElementById('img-result-url').textContent = url;
         document.getElementById('img-result').style.display = 'block';
       }
-      btn.disabled = false; btn.textContent = '이미지 잠그기 🔒';
+
+      btn.disabled = false;
+      btn.textContent = '이미지 잠그기 🔒';
     };
+
     reader.readAsDataURL(file);
   }
 
@@ -305,22 +485,28 @@
     const pw = document.getElementById('link-pw').value;
     const hint = document.getElementById('link-hint').value;
     const expiresIn = parseInt(document.getElementById('link-expires').value);
+
     if (!pw) return alert('비밀번호를 입력해주세요!');
     if (!link) return alert('링크를 입력해주세요!');
 
     const btn = document.getElementById('link-btn');
-    btn.disabled = true; btn.textContent = '저장 중... ⏳';
+    btn.disabled = true;
+    btn.textContent = '저장 중... ⏳';
 
     const encrypted = CryptoJS.AES.encrypt(
-      JSON.stringify({ type:'link', data: link }), pw
+      JSON.stringify({ type: 'link', data: link }),
+      pw
     ).toString();
+
     const id = await saveToDB(encrypted, hint, expiresIn);
     if (id) {
       const url = `${BASE}/${id}`;
       document.getElementById('link-result-url').textContent = url;
       document.getElementById('link-result').style.display = 'block';
     }
-    btn.disabled = false; btn.textContent = '링크 잠그기 🔒';
+
+    btn.disabled = false;
+    btn.textContent = '링크 잠그기 🔒';
   }
 
   async function saveToDB(encrypted, hint, expiresIn) {
@@ -330,7 +516,11 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, data: encrypted, hint, expiresIn }),
     });
-    if (!res.ok) { alert('저장 실패 😢'); return null; }
+
+    if (!res.ok) {
+      alert('저장 실패 😢');
+      return null;
+    }
     return id;
   }
 
@@ -342,8 +532,12 @@
   async function unlockIt() {
     const path = window.location.pathname.replace(/^\//, '');
     const pw = document.getElementById('unlock-pw').value;
+
     document.getElementById('error-msg').textContent = '';
     document.getElementById('unlocked-content').style.display = 'none';
+    document.getElementById('unlock-card').style.display = 'none';
+    document.getElementById('show-img').style.display = 'none';
+    document.getElementById('show-link').style.display = 'none';
 
     try {
       const res = await fetch(`/api/get?id=${path}`);
@@ -352,23 +546,26 @@
         document.getElementById('unlock-form').style.display = 'none';
         return;
       }
-      if (!res.ok) throw new Error('not found');
-      const { data: encrypted } = await res.json();
 
+      if (!res.ok) throw new Error('not found');
+
+      const { data: encrypted } = await res.json();
       const bytes = CryptoJS.AES.decrypt(encrypted, pw);
       const data = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
 
       if (data.type === 'img') {
         const img = document.getElementById('show-img');
-        img.src = data.data; img.style.display = 'block';
-        document.getElementById('show-link').style.display = 'none';
+        img.src = data.data;
+        img.style.display = 'block';
+        document.getElementById('unlock-card').style.display = 'block';
       } else {
         const a = document.getElementById('show-link');
-        a.href = data.data; a.style.display = 'flex';
-        document.getElementById('show-img').style.display = 'none';
+        a.href = data.data;
+        a.style.display = 'flex';
       }
+
       document.getElementById('unlocked-content').style.display = 'block';
-    } catch(e) {
+    } catch (e) {
       document.getElementById('error-msg').textContent = '❌ 비밀번호가 틀렸거나 링크가 잘못됐어요!';
     }
   }
